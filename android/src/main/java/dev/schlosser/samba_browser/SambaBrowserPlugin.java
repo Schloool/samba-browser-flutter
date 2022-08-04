@@ -32,12 +32,17 @@ public class SambaBrowserPlugin implements FlutterPlugin, MethodCallHandler {
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
 
-    if ("getShareList".equals(call.method)) {
+    if (call.method.equals("getShareList")) {
       SambaFileList.getShareList(call, result);
-    } else {
-      result.notImplemented();
+      return;
     }
 
+    if (call.method.equals("getFileBytes")) {
+      SambaFileDownloader.getFileBytes(call, result);
+      return;
+    }
+
+    result.notImplemented();
   }
 
   @Override
