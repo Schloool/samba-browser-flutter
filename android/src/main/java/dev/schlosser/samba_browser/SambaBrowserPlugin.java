@@ -1,19 +1,25 @@
 package dev.schlosser.samba_browser;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
+import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
 
-/** SambaBrowserPlugin */
 public class SambaBrowserPlugin implements FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
+
   private MethodChannel channel;
 
   @Override
@@ -22,14 +28,16 @@ public class SambaBrowserPlugin implements FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(this);
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
 
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
+    if ("getShareList".equals(call.method)) {
+      SambaFileList.getShareList(call, result);
     } else {
       result.notImplemented();
     }
+
   }
 
   @Override

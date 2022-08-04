@@ -26,14 +26,14 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
+    String allDrives;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion =
-          await SambaBrowser.platformVersion ?? 'Unknown platform version';
+      List drives = await SambaBrowser.getDrives('smb://na2.hs-mittweida.de/');
+      allDrives = drives.join(', ');
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      allDrives = 'Failed to get drives.';
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      _platformVersion = allDrives;
     });
   }
 
