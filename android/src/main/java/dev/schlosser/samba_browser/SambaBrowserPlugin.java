@@ -37,8 +37,8 @@ public class SambaBrowserPlugin implements FlutterPlugin, MethodCallHandler {
       return;
     }
 
-    if (call.method.equals("getFileBytes")) {
-      SambaFileDownloader.getFileBytes(call, result);
+    if (call.method.equals("saveFile")) {
+      SambaFileDownloader.saveFile(call, result);
       return;
     }
 
