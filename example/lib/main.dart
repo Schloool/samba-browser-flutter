@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
       List drives = await SambaBrowser.getShareList('smb://test/home/', 'test.net', 'user', 'password');
       allDrives = drives.join(', ');
 
-      String downloadFilePath = await SambaBrowser.saveFile('./', 'test.txt', 'smb://test/home/myFile.pdf', 'test.net', 'user', 'password');
+      String filePath = await SambaBrowser.saveFile('./', 'test.txt', 'smb://test/home/myFile.pdf', 'test.net', 'user', 'password');
 
     } on PlatformException {
       allDrives = 'Failed to get drives.';

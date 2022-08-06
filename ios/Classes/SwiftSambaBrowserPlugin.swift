@@ -9,6 +9,21 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS " + UIDevice.current.systemVersion)
+    let args = call.arguments as? [String:Any]
+
+    switch call.method {
+        case "getShareList":
+            let dummy = ["Folder 1", "Folder 2"]
+            result(dummy)
+            break
+
+        case "saveFile":
+            let dummy = "File"
+            result(dummy)
+            break
+
+            default:
+                result(FlutterMethodNotImplemented)
+    }
   }
 }
