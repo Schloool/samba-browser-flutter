@@ -9,7 +9,7 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    let args = call.arguments as? [String:Any]
+    // let args = call.arguments as? [String:Any]
 
     switch call.method {
         case "getShareList":
@@ -26,4 +26,9 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
                 result(FlutterMethodNotImplemented)
     }
   }
+  
+  private func getShareList() {
+    
+  }
+
 }
