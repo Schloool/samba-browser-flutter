@@ -18,6 +18,8 @@ import jcifs.smb.SmbFileInputStream;
 
 public class SambaFileDownloader {
 
+    private static final int FILE_CACHE_SIZE = 8192;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     static void saveFile(MethodCall call, MethodChannel.Result result)  {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -36,7 +38,7 @@ public class SambaFileDownloader {
                 File outFile = new File(call.argument("saveFolder").toString() + call.argument("fileName").toString());
                 FileOutputStream outStream = new FileOutputStream(outFile);
 
-                byte[] fileBytes = new byte[8192];
+                byte[] fileBytes = new byte[FILE_CACHE_SIZE];
                 int n;
                 while(( n = in.read(fileBytes)) != -1) {
                     outStream.write(fileBytes, 0, n);
@@ -46,7 +48,7 @@ public class SambaFileDownloader {
                 result.success(outFile.getAbsolutePath());
 
             } catch (IOException e) {
-                e.printStackTrace();
+                result.error("An iO-error occurred.", e.getMessage(), null);
             }
         });
     }

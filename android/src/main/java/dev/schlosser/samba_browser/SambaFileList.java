@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbAuthException;
+import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 public class SambaFileList {
@@ -31,11 +34,16 @@ public class SambaFileList {
         executor.execute(() -> {
             try {
                 SmbFile folder = new SmbFile(url, new NtlmPasswordAuthentication(call.argument("domain"), call.argument("username"), call.argument("password")));
-                ArrayList shareList = Arrays.stream(folder.listFiles()).map(SmbFile::getPath).collect(Collectors.toCollection(ArrayList::new));
+                ArrayList shareList = Arrays.stream(folder.listFiles())
+                        .filter(Objects::nonNull)
+                        .map(SmbFile::getPath)
+                        .collect(Collectors.toCollection(ArrayList::new));
                 result.success(shareList);
 
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch(SmbAuthException e) {
+                result.error("The given user could not be authenticated.", e.getMessage(), null);
+            } catch (IOException | NullPointerException e) {
+                result.error("A " + e.getClass() + " occurred.", e.getMessage(), null);
             }
         });
     }

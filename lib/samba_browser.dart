@@ -21,8 +21,8 @@ class SambaBrowser {
 
   static Future<String> saveFile(String saveFolder, String fileName, String url, String domain, String username, String password) async {
     Map<String, String> args = {
-      'saveFolder': saveFolder,
-      'fileName': fileName,
+      'saveFolder': saveFolder.endsWith('/') ? saveFolder : '$saveFolder/',
+      'fileName': fileName.startsWith('/') ? fileName.replaceFirst('/', '') : fileName,
       'url': url,
       'domain': domain,
       'username': username,
