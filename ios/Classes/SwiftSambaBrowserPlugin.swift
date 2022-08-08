@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import AMSMB2
 
 public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
@@ -9,13 +10,14 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    // let args = call.arguments as? [String:Any]
+    let args = call.arguments as! [String:Any]
 
     switch call.method {
         case "getShareList":
             let dummy = ["Folder 1", "Folder 2"]
-            result(dummy)
-            break
+            
+          result(getShareList(args: args))
+          break
 
         case "saveFile":
             let dummy = "File"
@@ -27,8 +29,8 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
     }
   }
   
-  private func getShareList() {
-    
+  private func getShareList(args: [String:Any]) -> [String] {
+    return ["Folder 1", "File 1"]
   }
 
 }
