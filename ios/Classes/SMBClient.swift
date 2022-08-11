@@ -17,7 +17,6 @@ class SMBClient {
     }
     
     private func connect(handler: @escaping (Result<AMSMB2, Error>) -> Void) {
-        // AMSMB2 can handle queueing connection requests
         client.connectShare(name: self.share) { error in
             if let error = error {
                 handler(.failure(error))
@@ -27,31 +26,30 @@ class SMBClient {
         }
     }
     
-    func listDirectory(path: String) {
+    func listDirectory(path: String, handler: @escaping (Result<[String], Error>) -> Void) {
         connect { result in
             switch result {
             case .success(let client):
                 client.contentsOfDirectory(atPath: path) { result in
                     switch result {
                     case .success(let files):
+                        var shares: [String] = []
                         for entry in files {
-                            print("name:", entry[.nameKey] as! String,
-                                  ", path:", entry[.pathKey] as! String,
-                                  ", type:", entry[.fileResourceTypeKey] as! URLFileResourceType,
-                                  ", size:", entry[.fileSizeKey] as! Int64,
-                                  ", modified:", entry[.contentModificationDateKey] as! Date,
-                                  ", created:", entry[.creationDateKey] as! Date)
+                            shares.append(entry[.pathKey] as! String)
                         }
                         
+                        handler(.success(shares))
+                        
                     case .failure(let error):
-                        print(error)
+                        handler(.failure(error))
                     }
                 }
                 
             case .failure(let error):
-                print(error)
+                handler(.failure(error))
             }
         }
+        
     }
     
     
