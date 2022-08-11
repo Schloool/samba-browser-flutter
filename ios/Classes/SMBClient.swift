@@ -35,7 +35,7 @@ class SMBClient {
                     case .success(let files):
                         var shares: [String] = []
                         for entry in files {
-                            shares.append(entry[.pathKey] as! String)
+                            shares.append(self.serverURL.absoluteString + "/" + (entry[.pathKey] as! String))
                         }
                         
                         handler(.success(shares))

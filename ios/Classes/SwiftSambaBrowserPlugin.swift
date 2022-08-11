@@ -28,12 +28,19 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
     }
     
     private func getShareList(args: [String:Any], flutterResult: @escaping FlutterResult) {
-        SMBClient(url: "", share: "", user: "", password: "").listDirectory(path: "", handler: { result in
+        
+        let url: String = args["url"] as! String
+        // the last component of the url has to be extracted separately as the share string must not be empty
+        let share: String = url.components(separatedBy: "/").last!
+        let user: String = args["username"] as! String
+        let password: String = args["password"] as! String
+        
+        SMBClient(url: url, share: share, user: user, password: password).listDirectory(path: "", handler: { result in
             switch result {
             case .success(let shares):
                 flutterResult(shares)
             case .failure(let error):
-                flutterResult(["ERROR :("])
+                flutterResult(FlutterError(code: "An error occurred", message: error.localizedDescription, details: nil))
             }
         })
 
