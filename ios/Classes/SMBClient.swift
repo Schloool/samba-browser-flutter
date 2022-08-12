@@ -27,9 +27,11 @@ class SMBClient {
     }
     
     func listDirectory(path: String, handler: @escaping (Result<[String], Error>) -> Void) {
+        
         connect { result in
             switch result {
             case .success(let client):
+                
                 client.contentsOfDirectory(atPath: path) { result in
                     switch result {
                     case .success(let files):
@@ -49,7 +51,27 @@ class SMBClient {
                 handler(.failure(error))
             }
         }
-        
+    }
+    
+    func downloadFile(path: String, to: String, handler: @escaping (Result<[String], Error>) -> Void) {
+        print("Start connect")
+        connect { result in
+            switch result {
+            case .success(let client):
+                print("Client connected, start download")
+                client.downloadItem(atPath: "ich.txt", to: FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!) { bytes, total in
+                    print(FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!)
+                    print("STATUS " + String(bytes) + " / " + String(total))
+                    return true
+                } completionHandler: { error in
+                    print(error!)
+                }
+
+            case .failure(let error):
+                print(error)
+                handler(.failure(error))
+            }
+        }
     }
     
     
