@@ -53,20 +53,22 @@ class SMBClient {
         }
     }
     
-    func downloadFile(path: String, to: String, handler: @escaping (Result<[String], Error>) -> Void) {
-        print("Start connect")
+    func downloadFile(atPath: String, to: String, handler: @escaping (Result<String, Error>) -> Void) {
         connect { result in
             switch result {
             case .success(let client):
-                print("Client connected, start download")
-                client.downloadItem(atPath: "ich.txt", to: FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!) { bytes, total in
-                    print(FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!)
-                    print("STATUS " + String(bytes) + " / " + String(total))
+                client.downloadItem(atPath: atPath, to: URL(fileURLWithPath: to)) { bytes, total in
                     return true
                 } completionHandler: { error in
-                    print(error!)
+                    switch error {
+                    case .some(let error):
+                        handler(.failure(error))
+                        
+                    case .none:
+                        handler(.success(to))
+                    }
                 }
-
+                
             case .failure(let error):
                 print(error)
                 handler(.failure(error))

@@ -29,16 +29,15 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
     private func getShareList(args: [String:Any], flutterResult: @escaping FlutterResult) {
         
         var url: String = args["url"] as! String
-        
-         if url.last == "/" {
-             url = String(url.dropLast())
-         }
-        
-        let user: String = args["username"] as! String
-        let password: String = args["password"] as! String
+        if url.last == "/" {
+            url = String(url.dropLast())
+        }
         
         // the last component of the url has to be extracted separately as the share string must not be empty
         let share: String = url.components(separatedBy: "/").last!
+        
+        let user: String = args["username"] as! String
+        let password: String = args["password"] as! String
         
         SMBClient(url: url, share: share, user: user, password: password).listDirectory(path: "", handler: { result in
             switch result {
@@ -52,13 +51,16 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
     
     private func saveFile(args: [String:Any], flutterResult: @escaping FlutterResult) {
         
-        let url: String = args["url"] as! String
-        // the last component of the url has to be extracted separately as the share string must not be empty
-        let share: String = url.components(separatedBy: "/").last!
+        let url: String = (args["url"] as! String).components(separatedBy: "/").dropLast().joined(separator: "/") + "/"
+        let share = url.components(separatedBy: "/").dropFirst(3).dropLast().joined(separator: "/")
+        let shareFileName: String = (args["url"] as! String).components(separatedBy: "/").last!
+        
+        let saveFolder: String = NSHomeDirectory() + "/Documents/" //args["saveFolder"] as! String
+        let fileName: String = args["fileName"] as! String
         let user: String = args["username"] as! String
         let password: String = args["password"] as! String
         
-        SMBClient(url: url, share: share, user: user, password: password).downloadFile(path: "", to: "", handler: { result in
+        SMBClient(url: url, share: share, user: user, password: password).downloadFile(atPath: shareFileName, to: saveFolder + fileName, handler: { result in
             switch result {
             case .success(let shares):
                 flutterResult(shares)
