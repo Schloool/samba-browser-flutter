@@ -1,51 +1,25 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:samba_browser/samba_browser.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const SambaApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class SambaApp extends StatefulWidget {
+  const SambaApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<SambaApp> createState() => _SambaAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  String _shareList = 'Not loaded';
+class _SambaAppState extends State<SambaApp> {
 
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
+  String shareUrl = '';
+  String domain = '';
+  String username = '';
+  String password = '';
 
-  Future<void> initPlatformState() async {
-    String allDrives;
-
-    try {
-      List drives = await SambaBrowser.getShareList('smb://test/home/', 'test.net', 'user', 'password');
-      allDrives = drives.join(', ');
-
-      String filePath = await SambaBrowser.saveFile('./', 'test.txt', 'smb://test/home/myFile.pdf', 'test.net', 'user', 'password');
-
-    } on PlatformException {
-      allDrives = 'Failed to get drives.';
-    }
-
-    if (!mounted) return;
-
-    setState(() {
-      _shareList = allDrives;
-    });
-  }
+  Future<List>? shareFuture;
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +28,80 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('SAMBA Plugin example app'),
         ),
-        body: Center(
-          child: Text('ShareList: $_shareList\n'),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  TextFormField(
+                    onChanged: (text) => shareUrl = text,
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'SAMBA share URL',
+                    ),
+                  ),
+
+                  TextFormField(
+                    onChanged: (text) => domain = text,
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Domain',
+                    ),
+                  ),
+
+                  Row(
+                    children: [
+                      Flexible(
+                        child: TextFormField(
+                          onChanged: (text) => username = text,
+                          decoration: const InputDecoration(
+                            border: UnderlineInputBorder(),
+                            labelText: 'Username',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 15.0),
+                      Flexible(
+                        child: TextFormField(
+                          onChanged: (text) => password = text,
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            border: UnderlineInputBorder(),
+                            labelText: 'Password',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  TextButton(
+                    onPressed: () => setState(() {
+                      shareFuture = SambaBrowser.getShareList(shareUrl, domain, username, password);
+                    }),
+                    child: const Text("List available shares")
+                  ),
+
+                  const SizedBox(height: 30.0),
+
+                  if (shareFuture != null) FutureBuilder(future: shareFuture, builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Column(
+                      children: [
+                        const Text('An error has occurred.'),
+                        Text(snapshot.error.toString())
+                      ]);
+                    }
+
+                    if (!snapshot.hasData) return const CircularProgressIndicator();
+
+                    List<String> shares = (snapshot.data as List).cast<String>();
+                    return Column(children: shares.map((e) => Text(e)).toList());
+                  })
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

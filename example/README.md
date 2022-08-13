@@ -1,16 +1,26 @@
-# samba_browser_example
+# Introduction
+This package is capable of performing several read operations on shares using the SMB2 specification.
+Currently, the following implementations are supported:
+ - Android (using the [JCIFS](https://www.jcifs.org/) library)
+ - iOS (using the [AMSMB2](https://github.com/amosavian/AMSMB2) library)
 
-Demonstrates how to use the samba_browser plugin.
+**DISCLAIMER!**
+The package was developed for experimental purposes. That is why the currently given amount of features is limited.
+However, I am planning to expand the package in the future. Therefore I would really appreciate any kind of suggestion or error report you can provide on the [GitHub Issue Board](https://github.com/Schloool/samba-browser-flutter/issues)
 
-## Getting Started
+## Installation
+To use this package, add `samba_browser` as a dependency to your `pubspec.yaml`-file.
+For more information, please use the [installing guide](https://pub.dev/packages/samba_browser/install).
 
-This project is a starting point for a Flutter application.
+## Example
+````
+SambaBrowser.getShareList('smb://192.168.0.1/', 'domain.net', 'admin', 'password')
+    .then((shares) => print('Shares found: ${shares.cast<String>()}'));
+    
+SambaBrowser.saveFile('./local/', 'downloaded.pdf', 'smb://192.168.0.1/example.pdf', 'domain.net', 'admin', 'password')
+    .then((path) => print('File downloaded to: $path'));
+````
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Contributing
+Contributions to the [GitHub Repository](https://github.com/Schloool/samba-browser-flutter) are very welcomed. 
+I also appreciate feature requests as well as bug reports using the [GitHub Issue Board](https://github.com/Schloool/samba-browser-flutter/issues).
