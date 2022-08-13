@@ -57,7 +57,7 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
         let share: String = String(url.split(separator: "/").last!)
         let atPath: String = String((args["url"] as! String).replacingOccurrences(of: url, with: "").dropFirst())
 
-        let saveFolder: String = NSHomeDirectory() + "/Documents/" //args["saveFolder"] as! String
+        let saveFolder: String = args["saveFolder"] as! String
         let fileName: String = args["fileName"] as! String
         let user: String = args["username"] as! String
         let password: String = args["password"] as! String
