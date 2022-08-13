@@ -28,18 +28,21 @@ public class SwiftSambaBrowserPlugin: NSObject, FlutterPlugin {
     
     private func getShareList(args: [String:Any], flutterResult: @escaping FlutterResult) {
         
-        var url: String = args["url"] as! String
+        // extract the first part of the URL to connect to the root-subfolder
+        var url: String = "smb://" + Array((args["url"] as! String).split(separator: "/"))[1..<3].joined(separator: "/")
         if url.last == "/" {
             url = String(url.dropLast())
         }
         
         // the last component of the url has to be extracted separately as the share string must not be empty
-        let share: String = url.components(separatedBy: "/").last!
+        let share: String = String(url.split(separator: "/").last!)
+        let path: String = (args["url"] as! String).components(separatedBy: "/").dropFirst(4).joined(separator: "/")
+        
         
         let user: String = args["username"] as! String
         let password: String = args["password"] as! String
         
-        SMBClient(url: url, share: share, user: user, password: password).listDirectory(path: "", handler: { result in
+        SMBClient(url: url, share: share, user: user, password: password).listDirectory(path: path, handler: { result in
             switch result {
             case .success(let shares):
                 flutterResult(shares)

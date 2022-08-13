@@ -31,13 +31,18 @@ class SMBClient {
         connect { result in
             switch result {
             case .success(let client):
-                
                 client.contentsOfDirectory(atPath: path) { result in
                     switch result {
                     case .success(let files):
                         var shares: [String] = []
                         for entry in files {
-                            shares.append(self.serverURL.absoluteString + "/" + (entry[.pathKey] as! String))
+                            let fileType: URLFileResourceType = entry[.fileResourceTypeKey] as! URLFileResourceType
+                            var rawName: String = entry[.pathKey] as! String
+                            if (fileType == URLFileResourceType.directory) {
+                              rawName += "/"
+                            }
+                            
+                            shares.append(self.serverURL.absoluteString + "/" + rawName)
                         }
                         
                         handler(.success(shares))
